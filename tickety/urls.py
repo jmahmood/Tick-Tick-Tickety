@@ -6,7 +6,8 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',
     # Example:
-    # (r'^tickety/', include('tickety.foo.urls')),
+    (r'^get/', include('REST.get_urls')),
+    (r'^GET/', include('REST.get_urls')),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
