@@ -13,16 +13,29 @@ class Location(models.Model):
 	lon = models.DecimalField( verbose_name="Longitude", max_digits=11, decimal_places=6, blank=True, null=True)
 	altitude = models.IntegerField( verbose_name="Altitude", blank=True, null=True)
 
+	def __unicode__(self):
+		return "%s (%s)" %(self.city,self.get_insideoutside_display())
+
+
+
 
 class Detector(models.Model):
-
 	nickname = models.SlugField()
 	location = models.OneToOneField(Location, verbose_name="Positional Information")
 	enabled = models.BooleanField(default=False)
 	added = models.DateTimeField(auto_now_add=True)
 
+	def __unicode__(self):
+		return "%s (%s)" %(self.nickname,self.location)
+
 # Base class to store readings taken
 class Radiation(models.Model):
+	class Meta:
+		get_latest_by = "taken"
+		ordering=['taken','particle']
+		verbose_name="Radioactivity Reading"
+		verbose_name_plural="Radioactivity Readings"
+
 	RADIOACTIVE_PARTICLES = ( ('alpha','Alpha Particles'), ('beta','Beta Particles'), ('gamma','Gamma Particles'), ('all','All'))
 	cpm = models.IntegerField(verbose_name="Counts per Minute")
 	added = models.DateTimeField(auto_now_add=True)
@@ -31,4 +44,4 @@ class Radiation(models.Model):
 	particle = models.CharField(max_length=10, choices=RADIOACTIVE_PARTICLES, default='all')
 
 	def __unicode__(self):
-		return "Radiation CPM: %d" % self.cpm
+		return "%s: Radiation CPM: %d" % (self.detector, self.cpm)

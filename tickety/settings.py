@@ -92,5 +92,5 @@ INSTALLED_APPS = (
     'geigercounter',
     'REST',
     # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+    'django.contrib.admin',
 )
