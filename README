@@ -8,7 +8,9 @@ The primary purpose of this is to make it easier for those of us in Tokyo to syn
 
 A second (eventual) purpose is to make it easier to understand WHERE the information is coming from, hopefully allowing us to build a web of trust (rather than blind trust in figures posted on the Internet)
 
-This program is licenced under the GPL3.  It's free - and it is my dearest hope that it stays free.
+This program is licenced under the GPL3.  It's free - and it is my dearest hope that it stays free.  
+
+This program could not have been done without the kind assistance of the Tokyo Hackerspace. 
 
 _CURRENT STATE OF PROTOCOL_
 
@@ -44,3 +46,5 @@ URL://get/Tokyo/alpha/from/YYYY-MM-DD/average/
 # Will return an average all of the alpha particle geiger counter data from YYYY-MM-DD until the present
 
 Similarly, we are implementing a POST protocol for sharing information.  Geiger counter information can be then shared by any device that is capable of making basic HTTP GET and POST requests. 
+
+If you think it is all wrong, please feel free to point out my foibles.  Arigato.
