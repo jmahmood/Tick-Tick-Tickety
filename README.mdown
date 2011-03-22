@@ -1,0 +1,110 @@
+_"Tick tick tickety means run your ass out of there..."_
+
+TICK-TICK-TICKETY v 0.1
+=================
+
+Tick-tick-tickety is a server-based application that implements a REST protocol to *store & retrieve readings taken from Geiger Counters*.
+
+The primary purpose of this is to make it easier __to syndicate & share geiger counter information__.  The protocol being used is undergoing development.
+
+A second (eventual) purpose is to make it easier to __understand WHERE the information is coming from__, hopefully allowing us to build a web of trust (rather than blind trust in figures posted on the Internet)
+
+This program is licenced under the GPL3.  It's free - as in freedom.  It also has no warranty.  I am not a Nuclear Engineer; be warned. 
+
+This program could not have been done without the kind assistance of the Tokyo Hackerspace. 
+
+## CURRENT STATE OF PROTOCOL
+
+### RETRIEVE INFORMATION
+
+- _Return the raw geiger counter readings for tokyo for the week_
+
+	    URL://get/Tokyo/	
+
+
+- _Return the average geiger counter readings for tokyo for the week_
+
+	    URL://get/Tokyo/average/	
+
+- _Return the median geiger counter readings for tokyo for the week_
+
+	    URL://get/Tokyo/median/	
+
+- _Return the raw  geiger counter readings for tokyo from YYYY-MM-DD_
+
+	    URL://get/Tokyo/from/YYYY-MM-DD/	
+
+- _Return the raw  geiger counter readings for tokyo until YYYY-MM-DD_
+
+	    URL://get/Tokyo/to/YYYY-MM-DD/	
+
+- _Return the raw  alpha particle geiger counter readings for Tokyo_
+
+	    URL://get/Tokyo/alpha/	
+
+- _Return the raw  beta particle geiger counter readings for Tokyo_
+
+	    URL://get/Tokyo/beta/	
+
+- _Return the raw  gamma particle geiger counter readings for Tokyo_
+
+	    URL://get/Tokyo/gamma/	
+
+
+All of these commands can be __mixed together__ (where it makes sense).  For instance:
+
+- _Return an average all of the alpha particle geiger counter data from YYYY-MM-DD until the present_
+
+	    URL://get/Tokyo/alpha/from/YYYY-MM-DD/average/
+
+### ADD INFORMATION
+
+- _Add your geiger counter_
+
+	    URL://post/detector/new/
+
+	You must send a POST command to the URL above.  This must contain all the required information below.  If you do not include all required information, your addition will be rejected.
+
+	__Required Information__
+	-------------------------------------
+	- nickname 
+		- Slug, 8-12 characters
+		- this will be used in the URL to show the readings from the detector
+	- password
+		- 8 characters minimum.
+		- Used when posting new readings.
+	- cityName
+		- The name of the city
+	- indoorOutdoor
+		- Is it an interior/exterior detector?
+		- Valid values are _indoors_ and _outdoors_
+	- countPerMicrosievert
+		- The ratio of Counts to one Microsievert
+		- Used to convert your CPM data into MicroS / Hr. 
+
+	_Optional_
+	-------------
+	- district
+		- English please
+		- Something to improve the positional understanding.  "Nakano" in Tokyo, for example.
+	- address
+		- Something that can be read by Google Maps please.  That means, enter in Japanese characters for a Japanese address, etc..
+	- latitude
+		- Please use the same units Google Maps uses.
+	- longitude
+		- Please use the same units Google Maps uses.
+	- altitude
+		- meters
+
+
+	__Return on Success__
+	-------------------------------------
+	You will receive a "201 Created" message with a link to a list of all readings your geiger counter has uploaded.
+
+	__Return on Failure__
+	-------------------------------------
+	You will receive a "403 Forbidden" error message.
+
+
+
+If you think it is all wrong, please feel free to point out my foibles.  Arigato.

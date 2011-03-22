@@ -95,7 +95,7 @@ def city_detectors(request, city_slug):
 def city_district(request, city_slug, district_slug, command=False):
 	pass
 
-def city(request, city_slug, command=False):
+def city(request, city_slug, commands=False):
 
 	# The current Regex needs to be fixed.
 	# It sometimes passes in a city name like
@@ -103,25 +103,17 @@ def city(request, city_slug, command=False):
 	# This command cleans up the city name, but
 	# ideally should not be needed
 
-	try:
-		city_slug = city_slug.split('/')[0]
-	except:
-		pass
 
 	detectors = Detector.objects.filter(location__city=city_slug)
 	readings = Radiation.objects.filter(detector__in=detectors)
-
-	try:
-		commands = __extract_commands(request)
-	except:
-		commands = False
 
 	if not commands:
 		# get the info for the city for the past week.
 		readings = readings.filter(taken__gte=datetime.now() - timedelta(weeks=1))
 		return output(request, city_slug, detectors, readings)
+	
+	commands = __extract_commands(request)
 
-	print repr(commands)
 	if not __valid_commands(commands):
 		return invalid_command(request, commands)
 
@@ -131,6 +123,7 @@ def city(request, city_slug, command=False):
 		date = __extract_date(commands[date_index])
 		if not date:
 			return invalid_command(request, command)
+
 		readings = readings.filter(taken__gte=date)
 
 	if 'to' in commands:
@@ -139,8 +132,8 @@ def city(request, city_slug, command=False):
 		date = __extract_date(commands[date_index])
 		if not date:
 			return invalid_command(request, command)
+
 		readings = readings.filter(taken__lte=date + timedelta(days=1))
-	print readings
 
 	if 'alpha' in commands:
 		# Extract alpha radiation only

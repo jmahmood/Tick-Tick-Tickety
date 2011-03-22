@@ -17,6 +17,17 @@ class Location(models.Model):
 		return "%s (%s)" %(self.city,self.get_insideoutside_display())
 
 
+# Store calibration data for a model detector to allow conversion between CPM to microsievert/hour.
+class DetectorCalibration(models.Model):
+	microsievert = models.FloatField( verbose_name="microsieverts")
+	count = models.IntegerField( verbose_name = "count")
+	enabled = models.BooleanField(default=True)
+	detector = models.ForeignField(Detector, related_name="Calibration")
+	created = models.DateTimeField(auto_now_add=True)
+	disabled = models.DateTimeField(blank=True, null=True)
+
+	def ratio(self):
+		return self.microsievert / self.count
 
 
 class Detector(models.Model):
@@ -41,6 +52,7 @@ class Radiation(models.Model):
 	added = models.DateTimeField(auto_now_add=True)
 	taken = models.DateTimeField(verbose_name="Date/Time the readings are taken")
 	detector = models.ForeignKey(Detector, related_name="detected")
+	detector_callibration = models.ForeignKey(DetectorCalibration, verbose_name="Detector Calibration when readings were taken")
 	particle = models.CharField(max_length=10, choices=RADIOACTIVE_PARTICLES, default='all')
 
 	def __unicode__(self):
