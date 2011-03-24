@@ -16,11 +16,17 @@ class Location(models.Model):
 	def __unicode__(self):
 		return "%s (%s)" %(self.city,self.get_insideoutside_display())
 
+class DetectorSocial(models.Model):
+	#because someone somewhere is going to want a social network for geiger nerds
+	detector = models.ForeignField(Detector, related_name="Social")
+	description = models.TextField(blank=True, null=True)
+	email = models.EMailField(blank=True, null=True)
+	twitter = models.CharField(max_length=40, blank=True, null=True)
+
 
 # Store calibration data for a model detector to allow conversion between CPM to microsievert/hour.
 class DetectorCalibration(models.Model):
-	microsievert = models.FloatField( verbose_name="microsieverts")
-	count = models.IntegerField( verbose_name = "count")
+	countpermicrosievert = models.FloatField( verbose_name="microsieverts")
 	enabled = models.BooleanField(default=True)
 	detector = models.ForeignField(Detector, related_name="Calibration")
 	created = models.DateTimeField(auto_now_add=True)

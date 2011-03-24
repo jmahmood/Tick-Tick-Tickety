@@ -95,15 +95,73 @@ All of these commands can be __mixed together__ (where it makes sense).  For ins
 		- Please use the same units Google Maps uses.
 	- altitude
 		- meters
-
+	- email
+		- a place where we can contact you.
+	- twitter
+		- a twitter account associated with you or your geiger counter.
+	- description
+		- A few paragraphs explaining your setup for anyone who is curious.
 
 	__Return on Success__
 	-------------------------------------
 	You will receive a "201 Created" message with a link to a list of all readings your geiger counter has uploaded.
 
+	__Return on Username Already Exists__
+	-------------------------------------
+	You will receive a "403 Forbidden" error message.
+
+	__Return on missing data__
+	-------------------------------------
+	You will receive a "400 Bad Request" error message.
+
+	__Return on invalid password value__
+	-------------------------------------
+	You will receive a "400 Bad Request" error message.
+
+	__Return on invalid indoorOutdoor value__
+	-------------------------------------
+	You will receive a "400 Bad Request" error message.
+
+	__Return on invalid countPerMicrosievert value__
+	-------------------------------------
+	You will receive a "400 Bad Request" error message.
+
 	__Return on Failure__
 	-------------------------------------
 	You will receive a "403 Forbidden" error message.
+
+- _Recalibrate your geiger counter_
+
+	    URL://post/detector/recalibrate/
+
+	You must send a POST command to the URL above.  This must contain all the required information below.  Your old calibration settings will be disabled.  Old data will continue to use your old calibration settings.
+
+	__Required Information__
+	-------------------------------------
+	- nickname 
+	- password
+	- countPerMicrosievert
+
+
+	__Return on Success__
+	-------------------------------------
+	You will receive a "200 OK" response, with a message indicating success.
+
+	__Return on Username/Password Failure__
+	-------------------------------------
+	You will receive a "401 Unauthorized" error message.
+
+	__Return on missing data__
+	-------------------------------------
+	You will receive a "400 Bad Request" error message.
+
+	__Return on invalid countPerMicrosievert value__
+	-------------------------------------
+	You will receive a "400 Bad Request" error message.
+
+	__Return on DatabaseFailure__
+	-------------------------------------
+	You will receive a "500 Internal Server Error" error message.
 
 
 

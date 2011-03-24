@@ -73,7 +73,7 @@ def json_one_reading(request, city_slug, name, reading):
 	return HttpResponse(output)
 
 def xml_output (request, city_slug, detectors, readings):
-	pass
+	return HttpResponse("XML is worthless.  Sorry.")
 
 def output (request, city_slug, detectors, readings):
 	output_array = []
@@ -105,6 +105,14 @@ def city(request, city_slug, commands=False):
 
 
 	detectors = Detector.objects.filter(location__city=city_slug)
+
+	if 'indoors' in commands:
+		# indoor detectors ONLY
+		detectors = detectors.filter(location__insideoutside=1)
+	if 'outdoors' in commands:
+		# outdoor detectors ONLY
+		detectors = detectors.filter(location__insideoutside=2)
+
 	readings = Radiation.objects.filter(detector__in=detectors)
 
 	if not commands:
