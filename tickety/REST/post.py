@@ -19,14 +19,15 @@ except ImportError:
 
 class D:
 
+	@staticmethod
 	def __create(request):
 		pass
 
+	@staticmethod
 	def __authorize(request):
 		pass
 
-
-
+	@staticmethod
 	def new(request):
 		def new_error(request):
 			pass
@@ -59,8 +60,7 @@ class D:
 			response = """Your detector was successfully added.  Please remember to note your current password, as it is not possible to retrieve it.
 Your Detector Info URL is: %s
 Help documentation for posting information is available at: %s
-You can see the project page at: %s
-"""% (url, helpurl, githuburl)
+You can see the project page at: %s"""% (url, helpurl, githuburl)
 			return HttpResponse(response, mimetype="text/plain", status=201)
 
 		def post(request):
@@ -116,22 +116,25 @@ You can see the project page at: %s
 		else:
 			return success(request, detector)
 
-
-
+	@staticmethod
 	def recalibrate(request):
 		pass
 
+	@staticmethod
 	def disable(request):
 		pass
 
 class R:
 
+	@staticmethod
 	def new(request):
 		pass
 
+	@staticmethod
 	def revise(request):
 		pass
 
+	@staticmethod
 	def delete(request):
 		pass
 
