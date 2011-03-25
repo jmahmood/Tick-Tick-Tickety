@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Location(models.Model):
@@ -20,7 +21,6 @@ class DetectorSocial(models.Model):
 	#because someone somewhere is going to want a social network for geiger nerds
 	detector = models.ForeignField(Detector, related_name="Social")
 	description = models.TextField(blank=True, null=True)
-	email = models.EMailField(blank=True, null=True)
 	twitter = models.CharField(max_length=40, blank=True, null=True)
 
 
@@ -28,9 +28,9 @@ class DetectorSocial(models.Model):
 class DetectorCalibration(models.Model):
 	countpermicrosievert = models.FloatField( verbose_name="microsieverts")
 	enabled = models.BooleanField(default=True)
-	detector = models.ForeignField(Detector, related_name="Calibration")
+	detector = models.ForeignField(Detector, related_name="calibration")
 	created = models.DateTimeField(auto_now_add=True)
-	disabled = models.DateTimeField(blank=True, null=True)
+	disabled_on = models.DateTimeField(blank=True, null=True)
 
 	def ratio(self):
 		return self.microsievert / self.count
@@ -41,6 +41,7 @@ class Detector(models.Model):
 	location = models.OneToOneField(Location, verbose_name="Positional Information")
 	enabled = models.BooleanField(default=False)
 	added = models.DateTimeField(auto_now_add=True)
+	owner = models.OneToOneField(User, related_name="detector")
 
 	def __unicode__(self):
 		return "%s (%s)" %(self.nickname,self.location)
