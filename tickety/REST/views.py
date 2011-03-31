@@ -27,11 +27,16 @@ def __extract_date(date):
 		except:
 			return False
 
-def __extract_commands(request, ignore_first=4):
+def __extract_commands_from_request(request, ignore_first=4):
+	# This is a reminant from a previous problem w/ the Regular Expression not putting the command into the proper location.
+	# I am keeping it in, just in case the problem re-occurs.
+
 	path_info = request.META['PATH_INFO']
+	return __extract_commands_from_string(string, ignore_first)
+
+def __extract_commands_from_string(path_info, ignore_first=0):
 	if path_info.endswith('/'):
 		path_info = path_info[:-1]
-	print path_info
 	return path_info.split('/')[ignore_first:]
 
 def __valid_commands(command_array):
@@ -106,21 +111,27 @@ def city(request, city_slug, commands=False):
 
 	detectors = Detector.objects.filter(location__city=city_slug)
 
+	if not commands:
+		# get the info for the city for the past week.
+		readings = Radiation.objects.filter(detector__in=detectors)
+		readings = readings.filter(taken__gte=datetime.now() - timedelta(weeks=1))
+		return output(request, city_slug, detectors, readings)
+
+	else:
+		commands = __extract_commands_from_request(request)
+
+	# Narrow down the list of detectors.
 	if 'indoors' in commands:
 		# indoor detectors ONLY
 		detectors = detectors.filter(location__insideoutside=1)
-	if 'outdoors' in commands:
+	if  'outdoors' in commands:
 		# outdoor detectors ONLY
 		detectors = detectors.filter(location__insideoutside=2)
 
-	readings = Radiation.objects.filter(detector__in=detectors)
+	# Find readings from detectors that fit the qualities needed above.
 
-	if not commands:
-		# get the info for the city for the past week.
-		readings = readings.filter(taken__gte=datetime.now() - timedelta(weeks=1))
-		return output(request, city_slug, detectors, readings)
+	readings = Radiation.objects.filter(detector__in=detectors)
 	
-	commands = __extract_commands(request)
 
 	if not __valid_commands(commands):
 		return invalid_command(request, commands)
