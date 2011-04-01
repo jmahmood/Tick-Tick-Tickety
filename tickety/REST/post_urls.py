@@ -1,11 +1,13 @@
 from django.conf.urls.defaults import *
 
 # All GET commands get filtered through this.
+from post import D, R
 
 urlpatterns = patterns('',
-	(r'^detector/new/$', 'REST.post.new_detector'),
-	(r'^detector/recalibrate/$', 'REST.post.recalibrate_detector'),
-	(r'^detector/disable/$', 'REST.post.city'),
-	(r'^reading/new/$', 'REST.post.detector'),
-	(r'^reading/delete/$', 'REST.post.detector_by_id'),
+	(r'^detector/new/$', D.new),
+	(r'^detector/recalibrate/$', D.recalibrate),
+	(r'^detector/disable/$', D.disable),
+	(r'^reading/new/$', R.new),
+	(r'^reading/revise/$', R.revise),
+	(r'^reading/delete/$', R.delete),
 )

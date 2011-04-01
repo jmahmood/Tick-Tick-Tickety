@@ -7,11 +7,13 @@
 	(r'^detector/(\d+)/(.*)/', 'REST.views.detector_by_id'),
 """
 
-
 from django.db.models import Avg, Max, Min, Count
 from django.http import HttpResponse
 from geigercounter.models import *
 from datetime import datetime, timedelta
+from django.views.decorators.csrf import csrf_exempt
+
+
 try:
 	import simplejson as json
 except ImportError:
@@ -29,6 +31,13 @@ def __glogin(request):
 	else:
 		return False
 
+def fail_on_get(request):
+	if request.method == 'GET':
+		return HttpResponse("You must make an HTTP POST call to execute this request", mimetype="text/plain", status=405)
+	return False
+
+
+
 class D:
 
 	@staticmethod
@@ -40,7 +49,13 @@ class D:
 		pass
 
 	@staticmethod
+	@csrf_exempt
 	def new(request):
+		bad_request_type = fail_on_get(request)
+		if bad_request_type:
+			return bad_request_type
+
+
 
 		def valid_request(request):
 			try:
@@ -55,7 +70,9 @@ class D:
 
 
 		def new_error(request):
-			pass
+			explanation = 'Debugging'
+			return HttpResponse("Your POST request was malformed. If possible, we explain why:\n%s" % explanation, mimetype="text/plain", status=400)
+
 		def unique_slug(request):
 			pass
 
@@ -69,10 +86,10 @@ class D:
 			if  'twitter' in request.POST:
 				ds.twitter = request.POST['twitter']
 			
-			 if 'description' in request.POST:
-			 	ds.description = request.POST['description']
-			 
-			 ds.save()
+			if 'description' in request.POST:
+				ds.description = request.POST['description']
+			
+			ds.save()
 		
 		def optional_location_info(request, l):
 			if 'district' in request.POST:
@@ -164,7 +181,7 @@ You can see the project page at: %s"""% (url, helpurl, githuburl)
 		if not valid_request(request):
 			return error400(request)
 		
-		user = __glogin(request):
+		user = __glogin(request)
 		if not user:
 			return error401(request)
 		
