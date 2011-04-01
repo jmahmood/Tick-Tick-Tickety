@@ -55,14 +55,19 @@ class D:
 		if bad_request_type:
 			return bad_request_type
 
-
+		def acceptable_count(request):
+			try:
+				float(request.POST['countPerMicrosievert'])
+				return request.POST['countPerMicrosievert'] > 0
+			except:
+				return False
 
 		def valid_request(request):
 			try:
 				nickname = request.POST['nickname']
 				password = request.POST['password']
 				cityname = request.POST['cityName']
-				indooroutdoor = request.POST['indoorOutdoor']
+				insideoutside = request.POST['insideOutside']
 				countpermicrosievert = request.POST['countPerMicrosievert']
 			except:
 				return False
@@ -70,11 +75,21 @@ class D:
 
 
 		def new_error(request):
-			explanation = 'Debugging'
-			return HttpResponse("Your POST request was malformed. If possible, we explain why:\n%s" % explanation, mimetype="text/plain", status=400)
+			explanation = ['Debugging']
+
+			if not valid_request(request):
+				explanation.append("\nYou must include a nickname, password, cityname, inside/outside and the count per microsievert.")
+			if not unique_slug(request):
+				explanation.append("\nThe nickname you have chosen has already been taken.")
+			if not acceptable_count(request):
+				explanation.append("\nThe countPerMicrosievert must be a numeric value greater than zero.  It actually was: %s" % request.POST['countPerMicrosievert'])
+
+
+			return HttpResponse("Your POST request was malformed. If possible, we explain why:\n%s" % '\n'.join(explanation), mimetype="text/plain", status=400)
 
 		def unique_slug(request):
-			pass
+			nn = request.POST['nickname']
+			return Detector.objects.filter(nickname=nn).count() == 0
 
 		def social_radiation_network(request, d):
 			ds = DetectorSocial()
@@ -122,7 +137,7 @@ You can see the project page at: %s"""% (url, helpurl, githuburl)
 		def post(request):
 			l = Location()
 			l.city = request.POST['cityName']
-			l.indooroutdoor = 1 if request.POST['indoorOutdoor'] == 'indoor' else 2
+			l.insideoutside = 1 if request.POST['insideOutside'] == 'inside' else 2
 			l.save()
 
 			o =User()
