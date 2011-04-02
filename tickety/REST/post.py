@@ -1,11 +1,4 @@
-#
-"""
-	(r'^city/([a-zA-Z.-\s]+)/detector/', 'REST.views.city_detectors'),
-	(r'^city/([a-zA-Z.-\s]+)/(.*)/', 'REST.views.city'),
-	(r'^city/([a-zA-Z.-\s]+)/', 'REST.views.city'),
-	(r'^detector/([a-zA-Z.-\s]+)/(.*)/', 'REST.views.detector'),
-	(r'^detector/(\d+)/(.*)/', 'REST.views.detector_by_id'),
-"""
+# Handle all HTTP POST commands that are dealt with by Tick-Tick-Tickety
 
 from django.db.models import Avg, Max, Min, Count
 from django.http import HttpResponse
@@ -79,17 +72,26 @@ class D:
 
 			if not valid_request(request):
 				explanation.append("\nYou must include a nickname, password, cityname, inside/outside and the count per microsievert.")
-			if not unique_slug(request):
-				explanation.append("\nThe nickname you have chosen has already been taken.")
-			if not acceptable_count(request):
-				explanation.append("\nThe countPerMicrosievert must be a numeric value greater than zero.  It actually was: %s" % request.POST['countPerMicrosievert'])
+			try:
+				if not unique_slug(request):
+					explanation.append("\nThe nickname you have chosen has already been taken.")
+			except:
+				pass
+			try:
+				if not acceptable_count(request):
+					explanation.append("\nThe countPerMicrosievert must be a numeric value greater than zero.  It actually was: %s" % request.POST['countPerMicrosievert'])
+			except:
+				pass
 
 
 			return HttpResponse("Your POST request was malformed. If possible, we explain why:\n%s" % '\n'.join(explanation), mimetype="text/plain", status=400)
 
 		def unique_slug(request):
-			nn = request.POST['nickname']
-			return Detector.objects.filter(nickname=nn).count() == 0
+			try:
+				nn = request.POST['nickname']
+				return Detector.objects.filter(nickname=nn).count() == 0
+			except:
+				return False
 
 		def social_radiation_network(request, d):
 			ds = DetectorSocial()
