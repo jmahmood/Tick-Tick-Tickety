@@ -5,6 +5,8 @@ from django.http import HttpResponse
 from geigercounter.models import *
 from datetime import datetime, timedelta
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login
+
 
 
 try:
@@ -32,6 +34,19 @@ def fail_on_get(request):
 
 
 class D:
+
+	@staticmethod
+	def __glogin(request):
+		username = request.POST['nickname']
+		password = request.POST['password']
+		user = authenticate(username=username, password=password)
+		if user is not None:
+			if user.is_active:
+				return user
+			else:
+				return False
+		else:
+			return False
 
 	@staticmethod
 	def __create(request):
@@ -196,29 +211,33 @@ You can see the project page at: %s"""% (url, helpurl, githuburl)
 			return True
 		
 		if not valid_request(request):
-			return error400(request)
+			return HttpResponse("Invalid request", mimetype="text/plain", status=400)
 		
-		user = __glogin(request)
+		user = authenticate(username=request.POST['nickname'],password=request.POST['password'])
+
 		if not user:
-			return error401(request)
-		
+			return HttpResponse(repr(user), mimetype="text/plain", status=401)
 		try:
 			if float(request.POST['countPerMicrosievert']) < 0:
-				return error401(request)
+				return HttpResponse("Invalid countPerMicrosievert", mimetype="text/plain", status=400)
 		except:
-			return error400(request)
+			return HttpResponse("Non-numeric countPerMicrosievert", mimetype="text/plain", status=400)
 		
-		detector = user.detector.get()
-		old_calibration = detector.calibration.filter(enabled=False)
-		old_calibration.enabled=False
-		old_calibration.disabled_on = datetime.now()
+		detector = user.detector
+		try:
+			old_calibration = detector.calibration.filter(enabled=True).get()
+			old_calibration.enabled=False
+			old_calibration.disabled_on = datetime.now()
+			old_calibration.save()
+		except:
+			pass
 
 		dc = DetectorCalibration()
 		dc.countpermicrosievert = request.POST['countPerMicrosievert']
 		dc.enabled = True
 		dc.detector = detector
 		dc.save()
-		old_calibration.save()
+		return HttpResponse("Your content has been saved", mimetype="text/plain", status=200)
 
 
 

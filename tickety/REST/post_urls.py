@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 
 # All GET commands get filtered through this.
-from post import D, R
+from post import *
 
 urlpatterns = patterns('',
 	(r'^detector/new/$', D.new),

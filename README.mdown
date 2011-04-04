@@ -75,7 +75,7 @@ All of these commands can be __mixed together__ (where it makes sense).  For ins
 		- Used when posting new readings.
 	- cityName
 		- The name of the city
-	- indoorOutdoor
+	- insideOutside
 		- Is it an interior/exterior detector?
 		- Valid values are _indoors_ and _outdoors_
 	- countPerMicrosievert
@@ -118,7 +118,7 @@ All of these commands can be __mixed together__ (where it makes sense).  For ins
 	-------------------------------------
 	You will receive a "400 Bad Request" error message.
 
-	__Return on invalid indoorOutdoor value__
+	__Return on invalid insideOutside value__
 	-------------------------------------
 	You will receive a "400 Bad Request" error message.
 

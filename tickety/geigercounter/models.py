@@ -7,7 +7,7 @@ class Location(models.Model):
 
 	city = models.CharField( verbose_name = 'City', max_length=45)
 	district = models.CharField( verbose_name = 'District', max_length=45, blank=True, null=True)
-	insideoutside = models.IntegerField( verbose_name='Located Indoors or Outdoors?', choices=INSIDEOUTSIDE)
+	insideoutside = models.IntegerField( verbose_name='Inside or Outside?', choices=INSIDEOUTSIDE)
 
 	address = models.CharField( verbose_name='Address', max_length=45, blank=True, null=True)
 	lat = models.DecimalField( verbose_name="Latitude", max_digits=11, decimal_places=6, blank=True, null=True)
