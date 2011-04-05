@@ -57,9 +57,9 @@ class Radiation(models.Model):
 	RADIOACTIVE_PARTICLES = ( ('alpha','Alpha Particles'), ('beta','Beta Particles'), ('gamma','Gamma Particles'), ('all','All'))
 	cpm = models.IntegerField(verbose_name="Counts per Minute")
 	added = models.DateTimeField(auto_now_add=True)
-	taken = models.DateTimeField(verbose_name="Date/Time the readings are taken")
+	taken = models.DateTimeField(verbose_name="Date/Time the readings are taken", blank=True, null=True)
 	detector = models.ForeignKey(Detector, related_name="detected")
-	detector_callibration = models.ForeignKey(DetectorCalibration, verbose_name="Detector Calibration when readings were taken")
+	detector_calibration = models.ForeignKey(DetectorCalibration, verbose_name="Detector Calibration when readings were taken", blank=True, null=True)
 	particle = models.CharField(max_length=10, choices=RADIOACTIVE_PARTICLES, default='all')
 
 	def __unicode__(self):

@@ -200,6 +200,7 @@ You can see the project page at: %s"""% (url, helpurl, githuburl)
 			return success(request, detector)
 
 	@staticmethod
+	@csrf_exempt
 	def recalibrate(request):
 		def valid_request(request):
 			try:
@@ -216,7 +217,7 @@ You can see the project page at: %s"""% (url, helpurl, githuburl)
 		user = authenticate(username=request.POST['nickname'],password=request.POST['password'])
 
 		if not user:
-			return HttpResponse(repr(user), mimetype="text/plain", status=401)
+			return HttpResponse("Invalid username/Password", mimetype="text/plain", status=401)
 		try:
 			if float(request.POST['countPerMicrosievert']) < 0:
 				return HttpResponse("Invalid countPerMicrosievert", mimetype="text/plain", status=400)
@@ -246,11 +247,57 @@ You can see the project page at: %s"""% (url, helpurl, githuburl)
 	def disable(request):
 		pass
 
+# Reading "View" class
 class R:
 
 	@staticmethod
+	@csrf_exempt
 	def new(request):
-		pass
+		def valid_request(request):
+			try:
+				nickname = request.POST['nickname']
+				password = request.POST['password']
+				cpm = request.POST['cpm']
+				return True
+			except:
+				return False
+		def valid_cpm(request):
+			try:
+				cpm = int(cpm)
+				return cpm >= 0
+			except:
+				return False
+		
+		bad_request_type = fail_on_get(request)
+		if bad_request_type:
+			return bad_request_type
+		
+		if not valid_request(request):
+			return HttpResponse("Invalid request", mimetype="text/plain", status=400)
+
+		user = authenticate(username=request.POST['nickname'],password=request.POST['password'])
+
+		if not user:
+			return HttpResponse("Invalid username/password", mimetype="text/plain", status=401)
+
+		if not valid_cpm(request):
+			return HttpResponse("CPM must be an integer greater than or equal to 0.", mimetype="text/plain", status=400)
+
+		reading = Radiation()
+		reading.cpm = request.POST['cpm']
+		if 'particle' in request.POST and request.POST['particle'] in ['alpha','beta','gamma','all']:
+			reading.particle = request.POST['particle']
+		if 'taken' in request.POST and request.POST['particle'] in ['alpha','beta','gamma','all']:
+			reading.particle = request.POST['particle']
+		reading.detector = user.detector
+		try:
+			calibration = detector.calibration.filter(enabled=True).get()
+			reading.detector_calibration = calibration
+		except:
+			pass
+		
+		reading.save()
+		return HttpResponse("Your content has been saved\n%s" % reading.__unicode() , mimetype="text/plain", status=200)
 
 	@staticmethod
 	def revise(request):

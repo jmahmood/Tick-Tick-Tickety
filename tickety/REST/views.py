@@ -1,12 +1,5 @@
-#
-"""
-	(r'^city/([a-zA-Z.-\s]+)/detector/', 'REST.views.city_detectors'),
-	(r'^city/([a-zA-Z.-\s]+)/(.*)/', 'REST.views.city'),
-	(r'^city/([a-zA-Z.-\s]+)/', 'REST.views.city'),
-	(r'^detector/([a-zA-Z.-\s]+)/(.*)/', 'REST.views.detector'),
-	(r'^detector/(\d+)/(.*)/', 'REST.views.detector_by_id'),
-"""
-
+# GET commands are handled in here.
+# (I will probably be renaming this to get.py shortly.)
 
 from django.db.models import Avg, Max, Min, Count
 from django.http import HttpResponse
