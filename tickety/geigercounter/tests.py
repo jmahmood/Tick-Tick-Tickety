@@ -115,7 +115,6 @@ class DetectorPostTest(TestCase):
 
 		self.assertNotEqual(authenticate(username='pre-existing',password='validpassword'), None)
 		response = c.post(url,{'nickname':'pre-existing','password':'validpassword','microsievert':0.03})
-		print response.content
 		self.assertEqual(response.status_code, 200)
 
 

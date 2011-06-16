@@ -268,7 +268,7 @@ class R:
 				pass
 			
 			reading.save()
-			return HttpResponse("Your content has been saved\n%s" % reading.__unicode() , mimetype="text/plain", status=200)
+			return HttpResponse("Your content has been saved\n%s" % reading.__unicode__() , mimetype="text/plain", status=200)
 
 		def type2():
 			reading = Radiation()
@@ -283,36 +283,31 @@ class R:
 				pass
 			
 			reading.save()
-			return HttpResponse("Your content has been saved\n%s" % reading.__unicode() , mimetype="text/plain", status=200)
+			return HttpResponse("Your content has been saved\n%s" % reading.__unicode__() , mimetype="text/plain", status=200)
 
 
 
 		def valid_request():
-			if nickname and password and (cpm or reading):
+			if nickname and password and (cpm or microsievert):
 				return True
 			
 			return False
 
 		def valid_cpm():
 			try:
-				cpm = int(cpm)
-				return cpm >= 0
+				return cpm and int(cpm) >= 0
 			except:
-				return False
+				pass
+			
+			return False
 
 		def valid_microsieverts():
 			try:
-				cpm = int(reading)
-				return cpm >= 0
+				ms_test =float(microsievert)
+				return microsievert and ms_test >= 0
 			except:
 				return False
 
-		def valid_reading():
-			try:
-				cpm = int(microsievert)
-				return cpm >= 0
-			except:
-				return False
 						
 		bad_request_type = fail_on_get(request)
 		if bad_request_type:
@@ -335,11 +330,12 @@ class R:
 			return HttpResponse("Invalid username/password", mimetype="text/plain", status=401)
 
 		if valid_cpm():
+			cpm = int(cpm)
 			return type1()
 		elif valid_microsieverts():
 			return type2()
-		else
-			return HttpResponse("CPM must be an integer greater than or equal to 0.", mimetype="text/plain", status=400)
+		else:
+			return HttpResponse("CPM or Microsievert must be an integer greater than or equal to 0.", mimetype="text/plain", status=400)
 
 
 	@staticmethod

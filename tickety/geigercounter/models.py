@@ -55,7 +55,8 @@ class Radiation(models.Model):
 		verbose_name_plural="Radioactivity Readings"
 
 	RADIOACTIVE_PARTICLES = ( ('alpha','Alpha Particles'), ('beta','Beta Particles'), ('gamma','Gamma Particles'), ('all','All'))
-	cpm = models.IntegerField(verbose_name="Counts per Minute")
+	cpm = models.IntegerField(verbose_name="Counts per Minute", null=True, blank=True)
+	microsievert = models.DecimalField(verbose_name="Counts per Minute", null=True, blank=True, max_digits=19, decimal_places=4)
 	added = models.DateTimeField(auto_now_add=True)
 	taken = models.DateTimeField(verbose_name="Date/Time the readings are taken", blank=True, null=True)
 	detector = models.ForeignKey(Detector, related_name="detected")
@@ -63,4 +64,10 @@ class Radiation(models.Model):
 	particle = models.CharField(max_length=10, choices=RADIOACTIVE_PARTICLES, default='all')
 
 	def __unicode__(self):
-		return "%s: Radiation CPM: %d" % (self.detector, self.cpm)
+		if self.cpm:
+			return "%s: Radiation CPM: %d" % (self.detector, self.cpm)
+		elif self.microsievert:
+			return "%s: Radiation CPM: %s" % (self.detector, self.microsievert)
+		else:
+			return "%s: Radiation CPM: Not Available (Not received)" % (self.detector)
+
