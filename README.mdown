@@ -77,7 +77,7 @@ All of these commands can be __mixed together__ (where it makes sense).  For ins
 		- The name of the city
 	- insideOutside
 		- Is it an interior/exterior detector?
-		- Valid values are _indoors_ and _outdoors_
+		- Valid values are _inside_ and _outside_
 	- countPerMicrosievert
 		- The ratio of Counts to one Microsievert
 		- Used to convert your CPM data into MicroS / Hr. 

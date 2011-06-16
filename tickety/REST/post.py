@@ -253,51 +253,94 @@ class R:
 	@staticmethod
 	@csrf_exempt
 	def new(request):
-		def valid_request(request):
+		def type1():
+			reading = Radiation()
+			reading.cpm = cpm
+			if 'particle' in request.POST and request.POST['particle'] in ['alpha','beta','gamma','all']:
+				reading.particle = request.POST['particle']
+			if 'taken' in request.POST and request.POST['particle'] in ['alpha','beta','gamma','all']:
+				reading.particle = request.POST['particle']
+			reading.detector = user.detector
 			try:
-				nickname = request.POST['nickname']
-				password = request.POST['password']
-				cpm = request.POST['cpm']
-				return True
+				calibration = detector.calibration.filter(enabled=True).get()
+				reading.detector_calibration = calibration
 			except:
-				return False
-		def valid_cpm(request):
+				pass
+			
+			reading.save()
+			return HttpResponse("Your content has been saved\n%s" % reading.__unicode() , mimetype="text/plain", status=200)
+
+		def type2():
+			reading = Radiation()
+			reading.microsievert = microsievert
+			if 'particle' in request.POST and request.POST['particle'] in ['alpha','beta','gamma','all']:
+				reading.particle = request.POST['particle']
+			reading.detector = user.detector
+			try:
+				calibration = detector.calibration.filter(enabled=True).get()
+				reading.detector_calibration = calibration
+			except:
+				pass
+			
+			reading.save()
+			return HttpResponse("Your content has been saved\n%s" % reading.__unicode() , mimetype="text/plain", status=200)
+
+
+
+		def valid_request():
+			if nickname and password and (cpm or reading):
+				return True
+			
+			return False
+
+		def valid_cpm():
 			try:
 				cpm = int(cpm)
 				return cpm >= 0
 			except:
 				return False
-		
+
+		def valid_microsieverts():
+			try:
+				cpm = int(reading)
+				return cpm >= 0
+			except:
+				return False
+
+		def valid_reading():
+			try:
+				cpm = int(microsievert)
+				return cpm >= 0
+			except:
+				return False
+						
 		bad_request_type = fail_on_get(request)
 		if bad_request_type:
 			return bad_request_type
+
+		nickname = request.POST.get('nickname', False)
+		password = request.POST.get('password', False)
+		cpm = request.POST.get('cpm', False)
+		microsievert = request.POST.get('microsievert', False)
 		
-		if not valid_request(request):
-			return HttpResponse("Invalid request", mimetype="text/plain", status=400)
+		if not valid_request():
+			return HttpResponse("Invalid request: You must include the nickname, password, and the cpm or microsievert.", mimetype="text/plain", status=400)
+
+		if cpm and microsievert:
+			return HttpResponse("Invalid request: Only include the CPM or the microsievert reading pelase.", mimetype="text/plain", status=400)
 
 		user = authenticate(username=request.POST['nickname'],password=request.POST['password'])
 
 		if not user:
 			return HttpResponse("Invalid username/password", mimetype="text/plain", status=401)
 
-		if not valid_cpm(request):
+		if valid_cpm():
+			return type1()
+		elif valid_microsieverts():
+			return type2()
+		else
 			return HttpResponse("CPM must be an integer greater than or equal to 0.", mimetype="text/plain", status=400)
 
-		reading = Radiation()
-		reading.cpm = request.POST['cpm']
-		if 'particle' in request.POST and request.POST['particle'] in ['alpha','beta','gamma','all']:
-			reading.particle = request.POST['particle']
-		if 'taken' in request.POST and request.POST['particle'] in ['alpha','beta','gamma','all']:
-			reading.particle = request.POST['particle']
-		reading.detector = user.detector
-		try:
-			calibration = detector.calibration.filter(enabled=True).get()
-			reading.detector_calibration = calibration
-		except:
-			pass
-		
-		reading.save()
-		return HttpResponse("Your content has been saved\n%s" % reading.__unicode() , mimetype="text/plain", status=200)
 
 	@staticmethod
 	def revise(request):

@@ -81,3 +81,88 @@ class DetectorPostTest(TestCase):
 		response = c.post(url,{'nickname':'pre-existing','password':'validpassword','countPerMicrosievert':'lol, word'})
 		self.assertEqual(response.status_code, 400)
 		self.assertEqual(response.content, 'Non-numeric countPerMicrosievert')
+
+	def test_empty_reading(self):
+		url = '/post/reading/new/'
+		c = Client()
+
+		self.assertNotEqual(authenticate(username='pre-existing',password='validpassword'), None)
+		response = c.post(url,{'nickname':'pre-existing','password':'validpassword'})
+		self.assertEqual(response.status_code, 400)
+		self.assertEqual(response.content, 'Invalid request: You must include the nickname, password, and the cpm or microsievert.')
+
+
+	def test_invalid_reading(self):
+		url = '/post/reading/new/'
+		c = Client()
+
+		self.assertNotEqual(authenticate(username='pre-existing',password='validpassword'), None)
+		response = c.post(url,{'nickname':'pre-existing','password':'validpassword','cpm':'lol, alphanumeric cpm'})
+		self.assertEqual(response.status_code, 400)
+
+	def test_valid_reading(self):
+		url = '/post/reading/new/'
+		c = Client()
+
+		self.assertNotEqual(authenticate(username='pre-existing',password='validpassword'), None)
+		response = c.post(url,{'nickname':'pre-existing','password':'validpassword','cpm':300})
+		self.assertEqual(response.status_code, 200)
+
+
+	def test_valid_microsievert_reading(self):
+		url = '/post/reading/new/'
+		c = Client()
+
+		self.assertNotEqual(authenticate(username='pre-existing',password='validpassword'), None)
+		response = c.post(url,{'nickname':'pre-existing','password':'validpassword','microsievert':0.03})
+		print response.content
+		self.assertEqual(response.status_code, 200)
+
+
+
+	def test_invalid_both_readings_sent(self):
+		url = '/post/reading/new/'
+		c = Client()
+
+		self.assertNotEqual(authenticate(username='pre-existing',password='validpassword'), None)
+		response = c.post(url,{'nickname':'pre-existing','password':'validpassword','cpm':500,'microsievert':0.03})
+		self.assertEqual(response.status_code, 400)
+
+"""
+
+	def test_empty_revision(self):
+		url = '/post/reading/new/'
+		c = Client()
+		response = c.post(url,{})
+		self.assertEqual(response.status_code, 400)
+		self.assertEqual(response.content, 'Invalid request')
+
+	def test_invalid_revision(self):
+		url = '/post/reading/new/'
+		c = Client()
+		response = c.post(url,{})
+		self.assertEqual(response.status_code, 400)
+		self.assertEqual(response.content, 'Invalid request')
+
+	def test_valid_revision(self):
+		url = '/post/reading/new/'
+		c = Client()
+		response = c.post(url,{})
+		self.assertEqual(response.status_code, 400)
+		self.assertEqual(response.content, 'Invalid request')
+
+
+	def test_invalid_delete(self):
+		url = '/post/reading/new/'
+		c = Client()
+		response = c.post(url,{})
+		self.assertEqual(response.status_code, 400)
+		self.assertEqual(response.content, 'Invalid request')
+
+	def test_valid_delete(self):
+		url = '/post/reading/new/'
+		c = Client()
+		response = c.post(url,{})
+		self.assertEqual(response.status_code, 400)
+		self.assertEqual(response.content, 'Invalid request')
+"""
